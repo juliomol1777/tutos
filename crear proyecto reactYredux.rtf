@@ -1,0 +1,273 @@
+{\rtf1\ansi\ansicpg1252\deff0\deflang3082{\fonttbl{\f0\fnil\fcharset0 Calibri;}{\f1\fnil\fcharset0 Courier New;}}
+{\colortbl ;\red255\green0\blue0;\red0\green0\blue255;}
+{\*\generator Msftedit 5.41.21.2512;}\viewkind4\uc1\pard\sa200\sl276\slmult1\cf1\lang10\f0\fs22 index.js\par
+\pard\cf0\lang3082\f1 import React from 'react';\par
+import ReactDOM from 'react-dom';\par
+import './index.css';\par
+import App from './App';\par
+import * as serviceWorker from './serviceWorker';\par
+import \{createStore, applyMiddleware\} from 'redux';\par
+import CombReducers from './store/reducers/CombReducers';\par
+import \{Provider\} from 'react-redux';\par
+import thunk from 'redux-thunk';\par
+\par
+//el createStore tiene 2 param, reducer y \par
+//actions(applyMiddleware(thunk))\par
+\par
+const store = createStore(CombReducers, applyMiddleware(thunk));\par
+\par
+ReactDOM.render(\par
+  <Provider store=\{store\}>\par
+    <React.StrictMode>\par
+      <App />\par
+    </React.StrictMode>\par
+  </Provider>,\par
+  document.getElementById('root')\par
+);\par
+\par
+// If you want your app to work offline and load faster, you can change\par
+// unregister() to register() below. Note this comes with some pitfalls.\par
+// Learn more about service workers: {\field{\*\fldinst{HYPERLINK "https://bit.ly/CRA-PWA"}}{\fldrslt{\ul\cf2 https://bit.ly/CRA-PWA}}}\f1\fs22\par
+serviceWorker.unregister();\par
+\pard\sa200\sl276\slmult1\lang10\f0\par
+Reducers\par
+\cf1 AuthReducers.js\par
+\pard\cf0\lang3082\f1 const initState= \{\};\par
+\par
+const AuthReducers = (state= initState, action) => \{\par
+    return state\par
+\};\par
+\par
+export default AuthReducers;\par
+\pard\sa200\sl276\slmult1\lang10\f0\par
+\cf1 ProjectReducers.js\par
+\pard\cf0\lang3082\f1 const initState= \{\par
+\par
+//proyectos iniciales harcodeados para probar funcionamiento\par
+\par
+    miProjects: [\par
+        \{id: '1', titulo: 'primero 1', contenido: 'bla bla ba'\},\par
+        \{id: '2', titulo: 'segundo 2', contenido: 'bla bla ba'\},\par
+        \{id: '3', titulo: 'tercero 3', contenido: 'bla bla ba'\}\par
+    ]\par
+\};\par
+\par
+const ProjectReducers = (state= initState, action) => \{\par
+    //dependiendo de la action es lo que hace\par
+    switch (action.type) \{\par
+        case 'CREATE_PROJECT':\par
+            console.log('proyecto creado', action.projectActn)\par
+            break;\par
+        default:\par
+            break;\par
+    \}\par
+    return state\par
+\};\par
+\par
+export default ProjectReducers;\par
+\pard\sa200\sl276\slmult1\lang10\f0\par
+//los dos reducers combinados, uno es de los proyectos y otro del login (auth)\par
+\cf1 CombReducers.js\par
+\pard\cf0\lang3082\f1 import AuthReducers from './AuthReducers';\par
+import ProjectReducers from './ProjectReducers';\par
+import \{combineReducers\} from 'redux';\par
+\par
+const CombReducers = combineReducers(\{\par
+    auth: AuthReducers,\par
+    project: ProjectReducers\par
+\});\par
+\par
+export default CombReducers;\par
+\pard\sa200\sl276\slmult1\lang10\f0\par
+//vista principal donde se renderizan los componentes\par
+\cf1 DashBoard.js\par
+\pard\cf0\lang3082\f1 import React, \{Component\} from 'react';\par
+import Notifications from './Notifications';\par
+import ProjectList from '../projects/ProjectList';\par
+import \{connect\} from 'react-redux';\par
+\par
+class Dashboard extends Component \{\par
+    render()\{\par
+        const \{projectsProps\} = this.props;\par
+\par
+        return(\par
+            <div className="card-group">\par
+                <div className="card">\par
+                    <div className="card-body">\par
+                        <ProjectList projectLst=\{projectsProps\} />\par
+                    </div>\par
+                </div>\par
+                <div className="card">\par
+                    <div className="card-body">\par
+                        <Notifications/>\par
+                    </div>\par
+                </div>\par
+            </div>\par
+        );\par
+    \}\par
+\}\par
+\par
+//con esto uso el estado (state)inicial de los reducer \par
+//(ruta a los proyectos harcodeados (state.project.miProjects)\par
+//envio los props a los componentes \par
+//(projectLst=\{projectsProps\} )\par
+\par
+const mapStateToProps = (state) => \{\par
+    return\{\par
+        projectsProps: state.project.miProjects\par
+    \}\par
+\};\par
+\par
+export default connect(mapStateToProps)(Dashboard);\par
+\pard\sa200\sl276\slmult1\lang10\f0\par
+Componentes\par
+\cf1 ProjectList.js\par
+\pard\cf0\lang3082\f1 import React from 'react';\par
+import ProjectSummary from './ProjectSummary';\par
+\par
+recibo el props de el \lang10\f0 DashBoard.js y renderizo cada proyecto harcodeado con\par
+// map \lang3082\f1  usando el componente ProjectSummary \par
+//envio los props a el componente hijo tambien \par
+//projectSmry=\{projectOne\} \par
+\par
+const ProjectList = (\{projectLst\}) => \{\par
+    return (\par
+        <div>\par
+            \{projectLst && projectLst.map(projectOne => \{\par
+                return(\par
+                    <ProjectSummary projectSmry=\{projectOne\} key=\{projectOne.id\} />\par
+                );\par
+            \})\par
+            \}\par
+        </div>\par
+    );\par
+\}\par
+\par
+export default ProjectList;\par
+\par
+\par
+\par
+\cf1 ProjectSummary.js\par
+\cf0\par
+import React from 'react';\par
+\par
+//recibo los props del componente padre y los uso para \par
+//renderizar cada proyecto de los 3 harcodeados\par
+\par
+const ProjectSummary = (\{projectSmry\}) => \{\par
+    return(\par
+        <div>\par
+            <p>\{projectSmry.titulo\}</p>\par
+            <p>Hecha por </p>\par
+            <p>Fecha</p>\par
+        </div>\par
+    );\par
+\}\par
+\par
+export default ProjectSummary;\par
+\par
+\par
+Action para crear un proyecto\par
+\par
+//desde el componente (CreateProject.js)envio una action\par
+//la recibe el action (projectActions.js) y la envia al\par
+//reducers(ProjectReducer) y este actualiza el estado\par
+\par
+\cf1 projectActions.js\par
+\cf0\par
+export const createProject= (projectNew) => \{\par
+    //toma lo que envia el componente (CreateProject) y lo envia al reducer (ProjectReducer)\par
+    return (dispatch, getState) => \{\par
+        dispatch(\{type: 'CREATE_PROJECT', projectActn: projectNew\});\par
+    \}\par
+\};\par
+\par
+\par
+\par
+\par
+\cf1 CreateProject.js\par
+\cf0\par
+import React, \{ useState \} from 'react';\par
+import Input from '../commons/Input';\par
+import \{connect\} from 'react-redux';\par
+import \{createProject\} from '../../store/actions/projectActions';\par
+\par
+const CreateProject = (props) => \{\par
+\par
+    const [nuevoProyecto, setNuevoProyecto] = useState(\{\par
+        titulo:'',\par
+        contenido: ''\par
+    \});\par
+\par
+    function handleSubmit(e) \{\par
+        e.preventDefault();\par
+        //console.log(nuevoProyecto)\par
+        //pasa el proyecto a crear usando mapDispachtToProps a la action (projectActions)\par
+        props.createProject(nuevoProyecto);\par
+    \}\par
+\par
+    function handleChange(e) \{\par
+        setNuevoProyecto(\{\par
+            ...nuevoProyecto,\par
+            [e.target.name]: e.target.value\par
+        \});\par
+    \}\par
+\par
+    return (\par
+        <div className="col md-6 ">\par
+            <div className="card card-body">\par
+                <h4>Nuevo Proyecto</h4>\par
+                <form onSubmit=\{handleSubmit\}>\par
+                    <div className="form-group">\par
+                        <label htmlFor="titulo">Titulo</label>\par
+                        <Input atributo=\{\{\par
+                            id: 'titulo',\par
+                            name: 'titulo',\par
+                            type: 'text',\par
+                            placeholder: 'Ingrese el titulo'\par
+                        \}\}\par
+                            handleChange=\{handleChange\}\par
+                            className="form-control"\par
+                        />\par
+                    </div>\par
+                    <div className="form-group">\par
+                        <label htmlFor="contenido">Texto</label>\par
+                        <textarea\par
+                            id= "contenido"\par
+                            name= "contenido"\par
+                            type= "text"\par
+                            placeholder= "Ingrese el texto...."\par
+                            onChange=\{handleChange\}\par
+                            className="form-control"\par
+                        />\par
+                    </div>\par
+                    <button type="submit" className="btn btn-primary">Enviar</button>\par
+                </form>\par
+            </div>\par
+        </div>\par
+    );\par
+\}\par
+\par
+\par
+//metodo para despachar una action al reducer, en el connect\par
+//el primer parametro es null (ver archivo index.js)porque el \par
+//store tiene 2 parametros uno para el estado y otro para\par
+//las actions, mapDispachtToProps es para las actions\par
+//mapStateToProps  es para el estado\par
+\par
+const mapDispachtToProps = (dispatch) => \{\par
+    return \{\par
+        createProject: (projectNew) => dispatch(createProject(projectNew))\par
+    \}\par
+\};\par
+\par
+export default connect(null, mapDispachtToProps) (CreateProject);\par
+\par
+\par
+\par
+\par
+\par
+\par
+\pard\sa200\sl276\slmult1\lang10\f0\par
+}
+ 
